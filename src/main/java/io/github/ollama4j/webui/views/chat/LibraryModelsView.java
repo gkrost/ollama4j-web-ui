@@ -39,161 +39,163 @@ import java.util.List;
 @Uses(Icon.class)
 public class LibraryModelsView extends Div {
 
-    private Grid<LibraryModelItem> grid;
+	private Grid<LibraryModelItem> grid;
 
-    private Filters filters;
+	private Filters filters;
 
-    private ChatService chatService;
+	private ChatService chatService;
 
-    public LibraryModelsView(ChatService chatService) {
-        setSizeFull();
-        addClassNames("models-view");
+	public LibraryModelsView(ChatService chatService) {
+		setSizeFull();
+		addClassNames("models-view");
 
-        filters = new Filters(() -> filters.refreshGrid(), grid);
-        filters.setup(chatService);
+		filters = new Filters(() -> filters.refreshGrid(), grid);
+		filters.setup(chatService);
 
-        VerticalLayout layout = new VerticalLayout(filters.createGrid());
-        layout.setSizeFull();
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        add(layout);
-        this.chatService = chatService;
-    }
+		VerticalLayout layout = new VerticalLayout(filters.createGrid());
+		layout.setSizeFull();
+		layout.setPadding(false);
+		layout.setSpacing(false);
+		add(layout);
+		this.chatService = chatService;
+	}
 
-    private HorizontalLayout createMobileFilters() {
-        // Mobile version
-        HorizontalLayout mobileFilters = new HorizontalLayout();
-        mobileFilters.setWidthFull();
-        mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER, LumoUtility.AlignItems.CENTER);
-        mobileFilters.addClassName("mobile-filters");
+	private HorizontalLayout createMobileFilters() {
+		// Mobile version
+		HorizontalLayout mobileFilters = new HorizontalLayout();
+		mobileFilters.setWidthFull();
+		mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER,
+				LumoUtility.AlignItems.CENTER);
+		mobileFilters.addClassName("mobile-filters");
 
-        Icon mobileIcon = new Icon("lumo", "plus");
-        Span filtersHeading = new Span("Filters");
-        mobileFilters.add(mobileIcon, filtersHeading);
-        mobileFilters.setFlexGrow(1, filtersHeading);
-        mobileFilters.addClickListener(e -> {
-            if (filters.getClassNames().contains("visible")) {
-                filters.removeClassName("visible");
-                mobileIcon.getElement().setAttribute("icon", "lumo:plus");
-            } else {
-                filters.addClassName("visible");
-                mobileIcon.getElement().setAttribute("icon", "lumo:minus");
-            }
-        });
-        return mobileFilters;
-    }
+		Icon mobileIcon = new Icon("lumo", "plus");
+		Span filtersHeading = new Span("Filters");
+		mobileFilters.add(mobileIcon, filtersHeading);
+		mobileFilters.setFlexGrow(1, filtersHeading);
+		mobileFilters.addClickListener(e -> {
+			if (filters.getClassNames().contains("visible")) {
+				filters.removeClassName("visible");
+				mobileIcon.getElement().setAttribute("icon", "lumo:plus");
+			} else {
+				filters.addClassName("visible");
+				mobileIcon.getElement().setAttribute("icon", "lumo:minus");
+			}
+		});
+		return mobileFilters;
+	}
 
-    public static class Filters extends Div {
+	public static class Filters extends Div {
 
-        private final TextField name = new TextField("Name");
-        private final TextField phone = new TextField("Phone");
-        private final DatePicker startDate = new DatePicker("Date of Birth");
-        private final DatePicker endDate = new DatePicker();
-        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
-        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
+		private final TextField name = new TextField("Name");
+		private final TextField phone = new TextField("Phone");
+		private final DatePicker startDate = new DatePicker("Date of Birth");
+		private final DatePicker endDate = new DatePicker();
+		private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
+		private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
 
-        private ChatService chatService;
-        private Grid grid;
+		private ChatService chatService;
+		private Grid grid;
 
-        public Filters(Runnable onSearch, Grid grid) {
+		public Filters(Runnable onSearch, Grid grid) {
 
-            setWidthFull();
-            addClassName("filter-layout");
-            addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM, LumoUtility.BoxSizing.BORDER);
-            name.setPlaceholder("First or last name");
+			setWidthFull();
+			addClassName("filter-layout");
+			addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
+					LumoUtility.BoxSizing.BORDER);
+			name.setPlaceholder("First or last name");
 
-            occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
+			occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
 
-            roles.setItems("Worker", "Supervisor", "Manager", "External");
-            roles.addClassName("double-width");
+			roles.setItems("Worker", "Supervisor", "Manager", "External");
+			roles.addClassName("double-width");
 
-            // Action buttons
-            Button resetBtn = new Button("Reset");
-            resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            resetBtn.addClickListener(e -> {
-                name.clear();
-                phone.clear();
-                startDate.clear();
-                endDate.clear();
-                occupations.clear();
-                roles.clear();
-                onSearch.run();
-            });
-            Button searchBtn = new Button("Search");
-            searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            searchBtn.addClickListener(e -> onSearch.run());
+			// Action buttons
+			Button resetBtn = new Button("Reset");
+			resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			resetBtn.addClickListener(e -> {
+				name.clear();
+				phone.clear();
+				startDate.clear();
+				endDate.clear();
+				occupations.clear();
+				roles.clear();
+				onSearch.run();
+			});
+			Button searchBtn = new Button("Search");
+			searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			searchBtn.addClickListener(e -> onSearch.run());
 
-            Div actions = new Div(resetBtn, searchBtn);
-            actions.addClassName(LumoUtility.Gap.SMALL);
-            actions.addClassName("actions");
+			Div actions = new Div(resetBtn, searchBtn);
+			actions.addClassName(LumoUtility.Gap.SMALL);
+			actions.addClassName("actions");
 
-            add(name, phone, createDateRangeFilter(), occupations, roles, actions);
-        }
+			add(name, phone, createDateRangeFilter(), occupations, roles, actions);
+		}
 
-        private Component createDateRangeFilter() {
-            startDate.setPlaceholder("From");
+		private Component createDateRangeFilter() {
+			startDate.setPlaceholder("From");
 
-            endDate.setPlaceholder("To");
+			endDate.setPlaceholder("To");
 
-            // For screen readers
-            startDate.setAriaLabel("From date");
-            endDate.setAriaLabel("To date");
+			// For screen readers
+			startDate.setAriaLabel("From date");
+			endDate.setAriaLabel("To date");
 
-            FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
-            dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
-            dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
+			FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
+			dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
+			dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
 
-            return dateRangeComponent;
-        }
+			return dateRangeComponent;
+		}
 
-        public void setup(ChatService chatServiceCfg) {
-            chatService = chatServiceCfg;
-        }
+		public void setup(ChatService chatServiceCfg) {
+			chatService = chatServiceCfg;
+		}
 
-        private Component createGrid() {
-            String LINK_TEMPLATE_HTML = """
-                       <vaadin-button title="Open" @click="${clickHandler}" theme="tertiary-inline small link">
-                           <a href="https://ollama.com/library/${item.name}" target="_blank">${item.name}</a>
-                       </vaadin-button>
-                    """;
+		private Component createGrid() {
+			String LINK_TEMPLATE_HTML = """
+					   <vaadin-button title="Open" @click="${clickHandler}" theme="tertiary-inline small link">
+					       <a href="https://ollama.com/library/${item.name}" target="_blank">${item.name}</a>
+					   </vaadin-button>
+					""";
 
-            grid = new Grid<>(LibraryModelItem.class, false);
-            grid.addColumn(LitRenderer.<LibraryModelItem>of(LINK_TEMPLATE_HTML).withProperty("name", LibraryModelItem::getName).withFunction("clickHandler", item -> {
-                Notification.show("Opening model details page for " + item.getName());
-            })).setHeader("Model").setSortable(true).setAutoWidth(true);
-            grid.addColumn("description").setHeader("Description").setAutoWidth(false).setWidth("50%");
-            grid.addColumn("pullCount").setHeader("Pulls").setAutoWidth(true);
-            grid.addColumn("totalTags").setHeader("Tags").setAutoWidth(true);
-            grid.addColumn("popularTagsString").setHeader("Popular Tags").setAutoWidth(true);
-            grid.addColumn("lastUpdated").setHeader("Updated").setAutoWidth(true);
+			grid = new Grid<>(LibraryModelItem.class, false);
+			grid.addColumn(LitRenderer.<LibraryModelItem>of(LINK_TEMPLATE_HTML)
+					.withProperty("name", LibraryModelItem::getName).withFunction("clickHandler", item -> {
+						Notification.show("Opening model details page for " + item.getName());
+					})).setHeader("Model").setSortable(true).setAutoWidth(true);
+			grid.addColumn("description").setHeader("Description").setAutoWidth(false).setWidth("50%");
+			grid.addColumn("pullCount").setHeader("Pulls").setAutoWidth(true);
+			grid.addColumn("totalTags").setHeader("Tags").setAutoWidth(true);
+			grid.addColumn("popularTagsString").setHeader("Popular Tags").setAutoWidth(true);
+			grid.addColumn("lastUpdated").setHeader("Updated").setAutoWidth(true);
 
-            List<LibraryModelItem> items = new ArrayList<>();
-            try {
-                List<LibraryModel> libraryModels = chatService.listLibraryModels();
-                libraryModels.forEach(libraryModel -> {
-                    LibraryModelItem item = new LibraryModelItem();
-                    item.setName(libraryModel.getName());
-                    item.setDescription(libraryModel.getDescription());
-                    item.setPullCount(libraryModel.getPullCount());
-                    item.setTotalTags(libraryModel.getTotalTags());
-                    item.setLastUpdated(libraryModel.getLastUpdated());
-                    item.setPopularTags(libraryModel.getPopularTags());
+			List<LibraryModelItem> items = new ArrayList<>();
+			try {
+				List<LibraryModel> libraryModels = chatService.listLibraryModels();
+				libraryModels.forEach(libraryModel -> {
+					LibraryModelItem item = new LibraryModelItem();
+					item.setName(libraryModel.getName());
+					item.setDescription(libraryModel.getDescription());
+					item.setPullCount(libraryModel.getPullCount());
+					item.setTotalTags(libraryModel.getTotalTags());
+					item.setLastUpdated(libraryModel.getLastUpdated());
+					item.setPopularTags(libraryModel.getPopularTags());
 //                    item.setPopularTagsString();
-                    items.add(item);
-                });
-            } catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            grid.setItems(items);
-            grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-            grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
+					items.add(item);
+				});
+			} catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			grid.setItems(items);
+			grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+			grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
-            return grid;
-        }
+			return grid;
+		}
 
-        private void refreshGrid() {
-            grid.getDataProvider().refreshAll();
-        }
-    }
+		private void refreshGrid() {
+			grid.getDataProvider().refreshAll();
+		}
+	}
 }
-

@@ -37,154 +37,150 @@ import java.util.Collection;
 @Uses(Icon.class)
 public class DownloadedModelsView extends Div {
 
-    private Grid<ModelItem> grid;
+	private Grid<ModelItem> grid;
 
-    private Filters filters;
+	private Filters filters;
 
-    private ChatService chatService;
+	private ChatService chatService;
 
-    public DownloadedModelsView(ChatService chatService) {
-        setSizeFull();
-        addClassNames("models-view");
+	public DownloadedModelsView(ChatService chatService) {
+		setSizeFull();
+		addClassNames("models-view");
 
-        filters = new Filters(() -> filters.refreshGrid(), grid);
-        filters.setup(chatService);
+		filters = new Filters(() -> filters.refreshGrid(), grid);
+		filters.setup(chatService);
 
-        VerticalLayout layout = new VerticalLayout(filters.createGrid());
-        layout.setSizeFull();
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        add(layout);
-        this.chatService = chatService;
-    }
+		VerticalLayout layout = new VerticalLayout(filters.createGrid());
+		layout.setSizeFull();
+		layout.setPadding(false);
+		layout.setSpacing(false);
+		add(layout);
+		this.chatService = chatService;
+	}
 
-    private HorizontalLayout createMobileFilters() {
-        // Mobile version
-        HorizontalLayout mobileFilters = new HorizontalLayout();
-        mobileFilters.setWidthFull();
-        mobileFilters.addClassNames(
-                LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER, LumoUtility.AlignItems.CENTER);
-        mobileFilters.addClassName("mobile-filters");
+	private HorizontalLayout createMobileFilters() {
+		// Mobile version
+		HorizontalLayout mobileFilters = new HorizontalLayout();
+		mobileFilters.setWidthFull();
+		mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER,
+				LumoUtility.AlignItems.CENTER);
+		mobileFilters.addClassName("mobile-filters");
 
-        Icon mobileIcon = new Icon("lumo", "plus");
-        Span filtersHeading = new Span("Filters");
-        mobileFilters.add(mobileIcon, filtersHeading);
-        mobileFilters.setFlexGrow(1, filtersHeading);
-        mobileFilters.addClickListener(
-                e -> {
-                    if (filters.getClassNames().contains("visible")) {
-                        filters.removeClassName("visible");
-                        mobileIcon.getElement().setAttribute("icon", "lumo:plus");
-                    } else {
-                        filters.addClassName("visible");
-                        mobileIcon.getElement().setAttribute("icon", "lumo:minus");
-                    }
-                });
-        return mobileFilters;
-    }
+		Icon mobileIcon = new Icon("lumo", "plus");
+		Span filtersHeading = new Span("Filters");
+		mobileFilters.add(mobileIcon, filtersHeading);
+		mobileFilters.setFlexGrow(1, filtersHeading);
+		mobileFilters.addClickListener(e -> {
+			if (filters.getClassNames().contains("visible")) {
+				filters.removeClassName("visible");
+				mobileIcon.getElement().setAttribute("icon", "lumo:plus");
+			} else {
+				filters.addClassName("visible");
+				mobileIcon.getElement().setAttribute("icon", "lumo:minus");
+			}
+		});
+		return mobileFilters;
+	}
 
-    public static class Filters extends Div {
+	public static class Filters extends Div {
 
-        private final TextField name = new TextField("Name");
-        private final TextField phone = new TextField("Phone");
-        private final DatePicker startDate = new DatePicker("Date of Birth");
-        private final DatePicker endDate = new DatePicker();
-        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
-        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
+		private final TextField name = new TextField("Name");
+		private final TextField phone = new TextField("Phone");
+		private final DatePicker startDate = new DatePicker("Date of Birth");
+		private final DatePicker endDate = new DatePicker();
+		private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
+		private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
 
-        private ChatService chatService;
-        private Grid grid;
+		private ChatService chatService;
+		private Grid grid;
 
-        public Filters(Runnable onSearch, Grid grid) {
+		public Filters(Runnable onSearch, Grid grid) {
 
-            setWidthFull();
-            addClassName("filter-layout");
-            addClassNames(
-                    LumoUtility.Padding.Horizontal.LARGE,
-                    LumoUtility.Padding.Vertical.MEDIUM,
-                    LumoUtility.BoxSizing.BORDER);
-            name.setPlaceholder("First or last name");
+			setWidthFull();
+			addClassName("filter-layout");
+			addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
+					LumoUtility.BoxSizing.BORDER);
+			name.setPlaceholder("First or last name");
 
-            occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
+			occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
 
-            roles.setItems("Worker", "Supervisor", "Manager", "External");
-            roles.addClassName("double-width");
+			roles.setItems("Worker", "Supervisor", "Manager", "External");
+			roles.addClassName("double-width");
 
-            // Action buttons
-            Button resetBtn = new Button("Reset");
-            resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            resetBtn.addClickListener(
-                    e -> {
-                        name.clear();
-                        phone.clear();
-                        startDate.clear();
-                        endDate.clear();
-                        occupations.clear();
-                        roles.clear();
-                        onSearch.run();
-                    });
-            Button searchBtn = new Button("Search");
-            searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            searchBtn.addClickListener(e -> onSearch.run());
+			// Action buttons
+			Button resetBtn = new Button("Reset");
+			resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			resetBtn.addClickListener(e -> {
+				name.clear();
+				phone.clear();
+				startDate.clear();
+				endDate.clear();
+				occupations.clear();
+				roles.clear();
+				onSearch.run();
+			});
+			Button searchBtn = new Button("Search");
+			searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			searchBtn.addClickListener(e -> onSearch.run());
 
-            Div actions = new Div(resetBtn, searchBtn);
-            actions.addClassName(LumoUtility.Gap.SMALL);
-            actions.addClassName("actions");
+			Div actions = new Div(resetBtn, searchBtn);
+			actions.addClassName(LumoUtility.Gap.SMALL);
+			actions.addClassName("actions");
 
-            add(name, phone, createDateRangeFilter(), occupations, roles, actions);
-        }
+			add(name, phone, createDateRangeFilter(), occupations, roles, actions);
+		}
 
-        private Component createDateRangeFilter() {
-            startDate.setPlaceholder("From");
+		private Component createDateRangeFilter() {
+			startDate.setPlaceholder("From");
 
-            endDate.setPlaceholder("To");
+			endDate.setPlaceholder("To");
 
-            // For screen readers
-            startDate.setAriaLabel("From date");
-            endDate.setAriaLabel("To date");
+			// For screen readers
+			startDate.setAriaLabel("From date");
+			endDate.setAriaLabel("To date");
 
-            FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
-            dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
-            dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
+			FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
+			dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
+			dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
 
-            return dateRangeComponent;
-        }
+			return dateRangeComponent;
+		}
 
-        public void setup(ChatService chatServiceCfg) {
-            chatService = chatServiceCfg;
-        }
+		public void setup(ChatService chatServiceCfg) {
+			chatService = chatServiceCfg;
+		}
 
-        private Component createGrid() {
-            grid = new Grid<>(ModelListItem.class, false);
-            grid.addColumn("model").setAutoWidth(true);
-            grid.addColumn("modifiedAt").setAutoWidth(true);
-            grid.addColumn("digest").setAutoWidth(true);
-            grid.addColumn("size").setAutoWidth(true);
+		private Component createGrid() {
+			grid = new Grid<>(ModelListItem.class, false);
+			grid.addColumn("model").setAutoWidth(true);
+			grid.addColumn("modifiedAt").setAutoWidth(true);
+			grid.addColumn("digest").setAutoWidth(true);
+			grid.addColumn("size").setAutoWidth(true);
 
-            Collection<ModelListItem> items = null;
-            try {
-                items = chatService.getModels();
-                items.forEach(item -> {
-                    String[] parts = item.getModifiedAt().split(" ");
-                    if (parts.length > 0) {
-                        String[] newParts = Arrays.copyOf(parts, parts.length - 1);
-                        String modified = String.join(" ", newParts);
-                        item.setModifiedAt(modified);
-                    }
-                });
+			Collection<ModelListItem> items = null;
+			try {
+				items = chatService.getModels();
+				items.forEach(item -> {
+					String[] parts = item.getModifiedAt().split(" ");
+					if (parts.length > 0) {
+						String[] newParts = Arrays.copyOf(parts, parts.length - 1);
+						String modified = String.join(" ", newParts);
+						item.setModifiedAt(modified);
+					}
+				});
 
-            } catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            grid.setItems(items);
-            grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-            grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
+			} catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			grid.setItems(items);
+			grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+			grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
-            return grid;
-        }
+			return grid;
+		}
 
-        private void refreshGrid() {
-            grid.getDataProvider().refreshAll();
-        }
-    }
+		private void refreshGrid() {
+			grid.getDataProvider().refreshAll();
+		}
+	}
 }

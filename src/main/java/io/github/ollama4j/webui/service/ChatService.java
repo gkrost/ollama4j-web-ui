@@ -48,8 +48,7 @@ public class ChatService implements Serializable {
         return modelItems;
     }
 
-    public Collection<ModelItem> getImageModelItems()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    public Collection<ModelItem> getImageModelItems() {
         Collection<ModelItem> modelItems = new ArrayList<>(Collections.emptyList());
         modelItems.add(new ModelItem("llava", "latest"));
         return modelItems;

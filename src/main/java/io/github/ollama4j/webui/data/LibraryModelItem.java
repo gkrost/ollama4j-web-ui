@@ -7,22 +7,22 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class LibraryModelItem extends LibraryModel {
-    private String popularTagsString;
-    private String link;
+	private String popularTagsString;
+	private String link;
 
-    public String getLink() {
-        return String.format("https://ollama.com/library/%s", getName());
-    }
+	public String getLink() {
+		return String.format("https://ollama.com/library/%s", getName());
+	}
 
-    public String getPopularTagsString() {
-        StringBuilder tagsString = new StringBuilder();
-        getPopularTags().forEach(tag -> {
-            if (!tagsString.isEmpty()) {
-                tagsString.append(", ");
-            }
-            tagsString.append(tag);
-        });
-        this.popularTagsString = tagsString.toString();
-        return this.popularTagsString;
-    }
+	public String getPopularTagsString() {
+		StringBuilder tagsString = new StringBuilder();
+		getPopularTags().forEach(tag -> {
+			if (!tagsString.isEmpty()) {
+				tagsString.append(", ");
+			}
+			tagsString.append(tag);
+		});
+		this.popularTagsString = tagsString.toString();
+		return this.popularTagsString;
+	}
 }

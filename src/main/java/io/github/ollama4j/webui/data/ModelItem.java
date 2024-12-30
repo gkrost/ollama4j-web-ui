@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ModelItem {
-  private String name;
-  private String version;
+	private String name;
+	private String version;
 }
