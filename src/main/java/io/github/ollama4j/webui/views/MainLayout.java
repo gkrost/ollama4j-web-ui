@@ -12,9 +12,12 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import io.github.ollama4j.webui.service.ChatService;
 import io.github.ollama4j.webui.views.chat.ChatView;
 import io.github.ollama4j.webui.views.chat.ChatWithImageView;
 import io.github.ollama4j.webui.views.chat.DownloadedModelsView;
@@ -22,25 +25,31 @@ import io.github.ollama4j.webui.views.chat.LibraryModelsView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /** The main view is a top-level placeholder for other views. */
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
 	private H2 viewTitle;
 
-	public MainLayout() {
-		setPrimarySection(Section.DRAWER);
-		addDrawerContent();
-		addHeaderContent();
+  private final ChatService service;
+  
+  public MainLayout(ChatService service) {
+    this.service = service;
+    setPrimarySection(Section.DRAWER);
+    addDrawerContent();
+    addHeaderContent();
 
-		Button darkModeToogleButton = new Button("◑", click -> {
-			ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-			if (themeList.contains(Lumo.DARK)) {
-				themeList.remove(Lumo.DARK);
-			} else {
-				themeList.add(Lumo.DARK);
-			}
-		});
-		darkModeToogleButton.setTooltipText("Switch UI Mode to Light or Dark");
-		addToDrawer(darkModeToogleButton);
+    Button darkModeToggleButton = new Button("◑", click -> {
+      String toggleScript = """
+        const theme = document.documentElement.getAttribute('theme');
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('theme', '');
+        } else {
+          document.documentElement.setAttribute('theme', 'dark');
+        }
+        """;
+      UI.getCurrent().getPage().executeJs(toggleScript);
+    });
+    darkModeToggleButton.setTooltipText("Switch UI Mode to Light or Dark");
+    addToDrawer(darkModeToggleButton);
 
 		String expressionToClearCookies = """
 				  function deleteAllCookies() {
@@ -97,14 +106,23 @@ public class MainLayout extends AppLayout {
 		return layout;
 	}
 
-	@Override
-	protected void afterNavigation() {
-		super.afterNavigation();
-		viewTitle.setText(getCurrentPageTitle());
-	}
 
-	private String getCurrentPageTitle() {
-		PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-		return title == null ? "" : title.value();
-	}
+  @Override
+  protected void afterNavigation() {
+    super.afterNavigation();
+    viewTitle.setText(getCurrentPageTitle());
+  }
+
+  private String getCurrentPageTitle() {
+    PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
+    return title == null ? "" : title.value();
+  }
+
+  @Override
+  public void beforeEnter(BeforeEnterEvent event) {
+    // Make a connection check but allow listing models from website
+    if (!service.isConnected() &&  !(this.getContent() instanceof LibraryModelsView))  {
+      UI.getCurrent().navigate(OllamaConnectionView.class);
+    }
+  }
 }

@@ -1,5 +1,6 @@
 package io.github.ollama4j.webui.views.chat;
 
+import com.vaadin.flow.component.ScrollOptions;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInputI18n;
@@ -41,15 +42,15 @@ public class ChatView extends VerticalLayout {
 		this.chatService = chatService;
 		// H5 header = new H5("Model: " + chatService.getOllamaModel());
 
-		ComboBox<ModelItem> modelsDropdown = new ComboBox<>("Models");
-		try {
-			modelsDropdown.setItems(chatService.getModelItems());
-		} catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		modelsDropdown.setItemLabelGenerator(ModelItem::getName);
-		modelsDropdown.setWidthFull();
-		modelsDropdown.setMaxWidth("1200px");
+    ComboBox<ModelItem> modelsDropdown = new ComboBox<>("Models");
+    try {
+      modelsDropdown.setItems(chatService.getModelItems());
+    } catch (OllamaBaseException | IOException | URISyntaxException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    modelsDropdown.setItemLabelGenerator(ModelItem::getName);
+    modelsDropdown.setWidthFull();
+    modelsDropdown.setMaxWidth("1200px");
 
 		try {
 			Optional<ModelItem> model = chatService.getModelItems().stream().findFirst();
@@ -61,44 +62,49 @@ public class ChatView extends VerticalLayout {
 			throw new RuntimeException(e);
 		}
 
-		modelsDropdown.addValueChangeListener(event -> {
-			MessageListItem welcome = new MessageListItem(
-					String.format("Hi! I'm %s. How may I assist you today?", event.getValue().getName()), Instant.now(),
-					"AI");
-			welcome.setUserAbbreviation("AI");
-			welcome.setUserColorIndex(2);
-			chat.setItems(welcome);
-			chatEntries.clear();
-			chatService.clearMessages();
-			modelSelected = event.getValue().getName();
-			// header.setText(modelSelected);
-		});
+    modelsDropdown.addValueChangeListener(
+            event -> {
+              MessageListItem welcome =
+                      new MessageListItem(
+                              String.format(
+                                      "Hi! I'm %s. How may I assist you today?", event.getValue().getName()),
+                              Instant.now(),
+                              "AI");
+              welcome.setUserAbbreviation("AI");
+              welcome.setUserColorIndex(2);
+              chat.setItems(welcome);
+              chatEntries.clear();
+              chatService.clearMessages();
+              modelSelected = event.getValue().getName();
+              //          header.setText(modelSelected);
+            });
 
 //    add(modelsDropdown);
 
 		chat = new MessageList();
 
-		MessageListItem welcome = new MessageListItem("Hello there! Select a model to start chatting with AI.",
-				Instant.now(), "AI");
-		welcome.setUserAbbreviation("AI");
-		welcome.setUserColorIndex(2);
+    MessageListItem welcome =
+            new MessageListItem(
+                    "Hello there! Select a model to start chatting with AI.", Instant.now(), "AI");
+    welcome.setUserAbbreviation("AI");
+    welcome.setUserColorIndex(2);
 
 		input = new MessageInput();
 		input.setI18n(new MessageInputI18n().setMessage("Ask anything").setSend("Ask"));
 
-		chat.setItems(welcome);
-		// add(header, chat, input);
-		add(modelsDropdown, chat, input);
-		input.addSubmitListener(this::onSubmit);
-		this.setHorizontalComponentAlignment(Alignment.CENTER, modelsDropdown, chat, input);
-		this.setPadding(true);
-		this.setHeightFull();
-		chat.setSizeFull();
-		input.setWidthFull();
-		chat.setMaxWidth("1200px");
-		input.setMaxWidth("1200px");
-		this.chatService = chatService;
-	}
+    chat.setItems(welcome);
+    //    add(header, chat, input);
+    add(modelsDropdown, chat, input);
+    input.addSubmitListener(this::onSubmit);
+    this.setHorizontalComponentAlignment(Alignment.CENTER, modelsDropdown, chat, input);
+    this.setPadding(true);
+    this.setHeightFull();
+    chat.setSizeFull();
+    input.setWidthFull();
+    chat.setMaxWidth("1200px");
+    input.setMaxWidth("1200px");
+    this.chatService = chatService;
+  }
 
 	private void onSubmit(MessageInput.SubmitEvent submitEvent) {
 		MessageListItem question = new MessageListItem(submitEvent.getValue(), Instant.now(), "You");
@@ -111,8 +117,17 @@ public class ChatView extends VerticalLayout {
 		answer.setUserColorIndex(2);
 		chat.setItems(chatEntries);
 
-		Thread t = new Thread(() -> chatService.ask(submitEvent.getValue(), modelSelected,
-				(s) -> getUI().ifPresent(ui -> ui.access(() -> answer.setText(s)))));
-		t.start();
-	}
+    Thread t =
+            new Thread(
+                    () ->
+                            chatService.ask(
+                                    submitEvent.getValue(),
+                                    modelSelected,
+                                    (s) -> getUI().ifPresent(ui -> ui.access(() -> {
+                                      answer.setText(s);
+                                      String jsCode = "document.querySelector('vaadin-message-list vaadin-message:last-child').scrollIntoView({ behavior: 'smooth' });";
+                                      ui.getPage().executeJs(jsCode);
+                                    }))));
+    t.start();
+  }
 }
