@@ -54,6 +54,8 @@ public class ChatService implements Serializable {
     public Collection<ModelItem> getImageModelItems() {
         Collection<ModelItem> modelItems = new ArrayList<>(Collections.emptyList());
         modelItems.add(new ModelItem("llava", "latest"));
+        modelItems.add(new ModelItem("aimagelab/llava-more-8b", "latest")); // TODO
+
         return modelItems;
     }
 
