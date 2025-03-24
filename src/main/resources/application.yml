@@ -1,0 +1,24 @@
+server:
+  port: ${SERVER_PORT:9090}
+
+logging:
+  level:
+    org.atmosphere: warn
+
+vaadin:
+  launch-browser: true
+  allowed-packages: com.vaadin,org.vaadin,dev.hilla,io.github.ollama4j
+
+spring:
+  jpa:
+    defer-datasource-initialization: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  mustache:
+    check-template-location: false
+
+ollama:
+  url: ${OLLAMA_HOST_ADDR:http://localhost:11434}
+  request-timeout-seconds: 600
