@@ -4,9 +4,9 @@
 # https://hub.docker.com/r/bellsoft/liberica-openjdk-alpine
 # https://bell-sw.com/libericajdk-containers/
 
-FROM bellsoft/liberica-openjdk-alpine:17
+FROM bellsoft/liberica-openjdk-alpine:21
 
-LABEL maintainer="Amith Koujalgi <koujalgi.amith@gmail.com>"
+LABEL maintainer="Gernot Krost <gernot@krost.org"
 
 RUN apk --no-cache add curl
 

@@ -4,23 +4,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/61aa7005-d52a-41e0-8a7a-fd3353f0a362 -->
-    <groupId>io.github.ollama4j</groupId>
-    <artifactId>ollama4j-web-ui</artifactId>
-    <name>ollama4j-web-ui</name>
+    <groupId>org.krost.ollama4j</groupId>
+    <artifactId>ollama4j-vaadin-web-ui</artifactId>
+    <name>Vaadin based ollama4j web UI</name>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
     <properties>
-        <!--        <revision>0.0.2</revision>-->
         <java.version>21</java.version>
         <vaadin.version>24.6.6</vaadin.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+    	<maven.compiler.target>${java.version}</maven.compiler.target>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
-    </parent>
+	<parent>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-parent</artifactId>
+	    <version>3.4.4</version>
+	    <relativePath/> <!-- explizit angegeben, spart Build-Zeit -->
+	</parent>
 
     <repositories>
         <repository>
@@ -41,6 +44,23 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-bom</artifactId>
+            <version>${vaadin.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.ollama4j</groupId>
+            <artifactId>ollama4j</artifactId>
+            <version>1.0.99</version>
+        </dependency>
+        <dependency>
+            <groupId>org.parttio</groupId>
+            <artifactId>line-awesome</artifactId>
+            <version>2.1.0</version>
+        </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -51,32 +71,33 @@
             <url>https://github.com/ollama4j/ollama4j-web-ui.git</url>
         </repository>
     </distributionManagement>
+    
+
 
     <dependencies>
-        <dependency>
-            <groupId>io.github.ollama4j</groupId>
-            <artifactId>ollama4j</artifactId>
-            <version>1.0.93</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/io.github.ollama4j/ollama4j -->
+		<dependency>
+		    <groupId>io.github.ollama4j</groupId>
+		    <artifactId>ollama4j</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
+            <artifactId>vaadin-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.parttio/line-awesome -->
+		<dependency>
+		    <groupId>org.parttio</groupId>
+		    <artifactId>line-awesome</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -99,8 +120,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
-        </dependency>
+            </dependency>
     </dependencies>
 
     <build>
@@ -112,17 +132,18 @@
             </plugin>
 
             <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-frontend</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			    <groupId>com.vaadin</groupId>
+			    <artifactId>vaadin-maven-plugin</artifactId>
+			    <version>${vaadin.version}</version>
+			    <executions>
+			        <execution>
+			            <id>prepare-frontend</id>
+			            <goals>
+			                <goal>prepare-frontend</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
         </plugins>
     </build>
 
@@ -145,19 +166,19 @@
             </dependencies>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>com.vaadin</groupId>
-                        <artifactId>vaadin-maven-plugin</artifactId>
-                        <version>${vaadin.version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build-frontend</goal>
-                                </goals>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
+		            <plugin>
+		                <groupId>com.vaadin</groupId>
+		                <artifactId>vaadin-maven-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <id>build-frontend</id>
+		                        <phase>compile</phase>
+		                        <goals>
+		                            <goal>build-frontend</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+		            </plugin>
                 </plugins>
             </build>
         </profile>
