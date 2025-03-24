@@ -25,9 +25,12 @@ replay_pid*
 
 .idea/
 target/
-frontend/generated
+src/main/frontend/generated
 .DS_Store
 *.DS_Store
 **/.DS_Store
 
 /src/main/bundles/
+/.project
+/.factorypath
+/.classpath
